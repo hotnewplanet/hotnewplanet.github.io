@@ -2,8 +2,8 @@ let song;
 let video;
 
 function preload() {
-  song = loadSound('snd/Kraftwerk.mp3');
-  video = createVideo(['vid/Dekki.mp4']);
+  song = loadSound('/snd/Kraftwerk.mp3');
+  video = createVideo(['/vid/Dekki.mp4']);
 }
 
 function setup() {

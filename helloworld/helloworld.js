@@ -2,7 +2,7 @@ let sprite;
 let aspect;
 
 function preload() {
-  sprite = loadImage('img/Marx Engels Lenin.png');
+  sprite = loadImage('/img/Marx Engels Lenin.png');
   aspect = sprite.height / sprite.width;
 }
 
