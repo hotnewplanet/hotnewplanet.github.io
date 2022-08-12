@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kasbergets styrka</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css">
+    <style>
+        #sketch-container {
+            width: 100%;
+            height: auto;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.11.3/lib/p5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/p5.sound@0.1.0/dist/p5.sound.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script>
+    </script>
+</head>
+<body>
+    <header>
+        <h1>Kasbergets styrka</h1>
+    </header>
+    <nav>
+        <h2>Sisällysluettelo</h2>
+        <ul id="contents">
+            <li><a href="#home">Kotskasivut</a></li>
+            <li><a href="#archive">Vanhat sivut</a></li>
+            <li><a href="#services">Linkit</a></li>
+            <li><a href="#contact">Yhteystiedot</a></li>
+        </ul>
+    </nav>
+    <section id="home">
+        <div id="sketch-container"></div>
+        <h2>Päiväkirja</h2>
+        <h3>8.3.2025</h3>
+        <p>Tein p5.js:llä tommosen simppelin <a href="/filthypig.html">pasianssin</a>. Pelin ideana on että sekoitetaan pakka ja nostetaan pakasta kortti kerrallaan ja samalla lasketaan neljä kertaa yhdestä kolmeentoista. Peli päättyy jos nostetun kortin silmäluku on sama kuin laskettu luku, esimerkiksi ässä kun lasketaan yksi, tai kunkku kun lasketaan 13.</p>
+        <p>Pelin koodiin on lisätty testausominaisuus, millä pakka järjestetään semmoiseen asentoon että peli menee takuuvarmasti läpi. Käytännössä riittää kun maittain järjestetystä pakasta siirretään päällimmäinen kortti pohjalle. Normaalistikin pelaten olen saanut pelin loppuun useamman kerran.</p>
+        <p>Millä todennäköisyydellä pasianssin saa pelattua loppuun? Koitin laskea tätä analyyttisesti, mutta en keksinyt ratkaisua. Toinen vaihtis on simuloida peliä monte carlolla. Toistetaan peliä vaikka yhdestä kymmeneen tuhanteen kertaan ja lasketaan mikä osuus peleistä menee läpi. Tämän pitäisi konvergoitua melko nopeasti oikeaa tn:ää kohti.</p>
+        <p>Alla on R-koodi monte carlo-simulaatioon.</p>
+        <pre><code>
+kortit <- rep(c(1:13), 4)
+
+pelaa <- function() {
+    sekotus <- sample(kortit)
+    kusi <- any(sekotus == kortit)
+    ! kusi
+}
+
+toista <- function(n) {
+    tulos <- replicate(n, pelaa())
+    läpi <- sum(tulos)
+    läpi / n
+}
+
+toistot <- sapply(seq_len(10000), toista)
+
+plot(
+    x = 1:length(toistot),
+    y = toistot,
+    type = 'l',
+    col = 'red',
+    xlab = 'toistot',
+    ylab = 'tn(peli läpi)',
+    main = 'Pöliän sian pasianssi'
+)
+
+round(100 * mean(toistot), digits = 2)            
+        </code></pre>
+        <p><img src="/pasianssi.png" /></p>
+        <p>Läpipeluun todennäköisyys on arviolta 1,62% eli sadasta pelikerrasta keskimäärin 1-2 menee läpi.</p>
+    </section>
+    <section id="archive">
+        <h2>Arkisto</h2>
+        <ul id="archive">
+            <li><a href="/filthypig.html">Pöliän sian pasianssi</a></li>
+            <!--<li><a href="/munapeli.html">Munapeli</a></li>-->
+            <!--<li><a href="/uus sivu.html">Uus sivu</a></li>-->
+        </ul>
+    </section>
+    <section id="services">
+        <h2>Hyviä linkkejä</h2>
+        <ul id="links">
+            <li><a href="https://www.flickr.com/photos/hotnewplanet/">Flickr</a></li>
+            <li><a href="https://github.com/hotnewplanet/">Github</a></li>
+        </ul>
+    </section>
+    <section id="contact">
+        <h2>Lähetä roskapostia</h2>
+        <p>Et vittu lähetä.</p>
+    </section>
+    <footer>
+        <p>&copy; 2025 <a href="/">Hot new planet</a></p>
+    </footer>
+</body>
+</html>
