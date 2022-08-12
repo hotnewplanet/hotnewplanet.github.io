@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Munapeli</title>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    #sketch-container {
+      width: 100%;
+      height: auto;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.11.3/lib/p5.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/p5.sound@0.1.0/dist/p5.sound.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.min.js"></script>
+  <script>
+    
+    let game;
+    
+    function preload() {
+    }
+    
+    function setup() {
+      let container = document.getElementById('sketch-container');
+      let canvas = createCanvas(container.clientWidth, container.clientHeight);
+      canvas.parent('sketch-container');
+      game = new Game(0, 0, canvas.width, canvas.height);
+      mouseClicked = handleMouseClicked;
+      mouseMoved = handleMouseMoved;
+      windowResized();
+    }
+    
+    function draw() {
+      background(220);
+      game.render(0, 0, width, height);
+    }
+    
+    function windowResized() {
+      let container = document.getElementById('sketch-container');
+      let aspectRatio = 16 / 9;
+      let newWidth = container.clientWidth;
+      let newHeight = newWidth / aspectRatio;
+      
+      resizeCanvas(newWidth, newHeight);
+      game.resize(0, 0, newWidth, newHeight);
+    }
+    
+    function handleMouseClicked() {
+      game.handleMouseClicked(mouseX, mouseY);
+    }
+    
+    function handleMouseMoved() {
+      game.handleMouseMoved(mouseX, mouseY);
+    }
+    
+    class Game {
+      constructor(x, y, w, h) {
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
+      }
+      
+      render(x, y, w, h) {
+        background(0);
+      }
+      
+      resize(x, y, w, h) {
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
+      }
+      
+      handleMouseClicked(x, y) {
+      }
+      
+      handleMouseMoved(x, y) {
+      }
+    }
+    
+    
+  </script>
+</head>
+<body>
+  <header>
+    <h1>Munapeli</h1>
+  </header>
+  
+  <main>
+    <article>
+      <div id="sketch-container"></div>
+    </article>
+  </main>
+  
+  <footer>
+    <p>&copy; 2025 <a href="/">Hot new planet</a></p>
+  </footer>
+</body>
+</html>

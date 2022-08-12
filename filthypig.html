@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pöliän sian pasianssi</title>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    #sketch-container {
+      width: 100%;
+      height: auto;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.11.3/lib/p5.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/p5.sound@0.1.0/dist/p5.sound.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.min.js"></script>
+  <script>
+    let aspect = 16/9;
+    let cardAspect = 63/88;
+    
+    let suits = ['\u2660', '\u2665', '\u2666', '\u2663']; // Spades, Hearts, Diamonds, Clubs
+    let values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+    let deck;
+    let flippedStack = [];
+    let cardWidth, cardHeight;
+    
+    let count = 0; // ah ah ah
+    let gameOver = false;
+    let score = 0;
+    let finnished = false;
+    
+    let filthy_cheat = false;
+    
+    function setup() {
+      resizeCanvasToDiv();
+      resetDeck();
+      noLoop();
+    }
+    
+    function draw() {
+      background('#228B22');
+      push();
+      translate(width/4, height/2);
+      deck.displayStack(-cardWidth/2, -cardHeight/2);
+      pop();
+      
+      push();
+      translate(3*width/4, height/2);
+      displayFlippedStack(-cardWidth/2, -cardHeight/2);
+      pop();
+      
+      push();
+      translate(width/2, height/10);
+      textAlign(CENTER, CENTER);
+      textSize(cardHeight / 8);
+      fill('#ffffff');
+      stroke('#000000');
+      strokeWeight(4);
+      if (finnished) {
+        text('🐗 PÖLIÄ SIKA! 🐷', 0, 0);
+      } else if (gameOver) {
+        text('Voi rähmä!', 0, 0);
+      } else if (count == 0) {
+        text('⬅️ Nosta kortti!', 0, 0);
+      } else {
+        text('Laske ' + count, 0, 0);
+      }
+      pop();
+      
+      push();
+      translate(width/2, 9*height/10);
+      textAlign(CENTER, CENTER);
+      textSize(cardHeight / 8);
+      fill('#ffffff');
+      stroke('#000000');
+      strokeWeight(4);
+      if (!gameOver && !finnished) {
+        text('Pisteet ' + score, 0, 0);
+      } else {
+        text('Sekota pakka! ➡️', 0, 0);
+      }
+      pop();
+      
+    }
+    
+    class Card {
+      constructor(value, suit) {
+        this.value = value;
+        this.suit = suit;
+        this.flipped = false;
+      }
+      
+      drawFace(x, y) {
+        push();
+        
+        stroke('#000000');
+        strokeWeight(Math.floor(width/250));
+        fill('#ffffff');
+        rect(x, y, cardWidth, cardHeight, 10);
+        
+        // Set text color based on suit
+        if (this.suit === '\u2665' || this.suit === '\u2666') { // Hearts or Diamonds
+          fill('#DC143C');
+        } else { // Spades or Clubs
+          fill('#000000');
+        }
+        
+        noStroke();
+        let margin = cardWidth/20;
+        
+        textAlign(LEFT, TOP);
+        textSize(cardWidth / 3);
+        text(this.value, x + margin, y + margin);
+        textAlign(RIGHT, BOTTOM);
+        text(this.value, x + cardWidth - margin, y + cardHeight - margin);
+        textAlign(CENTER, CENTER);
+        textSize(cardWidth / 1);
+        text(this.suit, x + cardWidth / 2, y + cardHeight / 2);
+        
+        pop();
+      }
+      
+      drawBack(x, y) {
+        push();
+        
+        stroke('#000000');
+        strokeWeight(Math.floor(width/250));
+        fill('#ffffff');
+        rect(x, y, cardWidth, cardHeight, 10);
+        
+        noStroke();
+        fill('#87CEFA');
+        let margin = cardWidth/20;
+        rect(x+margin, y+margin, cardWidth-2*margin, cardHeight-2*margin, 10);
+        
+        textAlign(CENTER, CENTER);
+        textSize(cardWidth / 5);
+        fill('#000000');
+        text('🐗 🐷', x + cardWidth / 2, y + cardHeight / 2 - 3*cardHeight / 10);
+        text('🐷 🐗', x + cardWidth / 2, y + cardHeight / 2 - cardHeight / 10);
+        text('🐗 🐷', x + cardWidth / 2, y + cardHeight / 2 + cardHeight / 10);
+        text('🐷 🐗', x + cardWidth / 2, y + cardHeight / 2 + 3*cardHeight / 10);
+        
+        pop();
+      }
+    }
+    
+    class Deck {
+      constructor() {
+        this.cards = [];
+        
+        if (!filthy_cheat) {
+          for (let suit of suits) {
+            for (let value of values) {
+              this.cards.push(new Card(value, suit));
+            }
+          }
+        } else {
+          // FILTHY CHEAT
+          for (let suit of suits) {
+            for (let i = 0; i < values.length; i++) {
+              let n = (i+1) % values.length;
+              this.cards.unshift(new Card(values[n], suit));
+            }
+          }
+        }
+      }
+      
+      shuffleDeck() {
+        if (!filthy_cheat) {
+          this.cards = shuffle(this.cards);
+        }
+      }
+      
+      displayStack(x, y) {
+        if (this.cards.length > 0) {
+          this.cards[this.cards.length - 1].drawBack(x, y);
+        }
+      }
+      
+      flipTopCard() {
+        if (this.cards.length > 0) {
+          let card = this.cards.pop();
+          card.flipped = true;
+          flippedStack.push(card);
+        }
+      }
+    }
+    
+    function resetDeck() {
+      deck = new Deck();
+      deck.shuffleDeck();
+      flippedStack = [];
+      
+      count = 0; // ah ah ah
+      gameOver = false;
+      score = 0;
+      finnished = false;
+    }
+    
+    function displayFlippedStack(x, y) {
+      if (flippedStack.length > 0) {
+        flippedStack[flippedStack.length - 1].drawFace(x, y);
+      }
+    }
+    
+    function mousePressed() {
+      if (!gameOver && !finnished) {
+        let deckX = width/4 - cardWidth/2;
+        let deckY = height/2 - cardHeight/2;
+        if (mouseX > deckX && mouseX < deckX+cardWidth && mouseY > deckY && mouseY < deckY+cardHeight) {
+          deck.flipTopCard();
+          count++;
+          let topCard = flippedStack[flippedStack.length-1];
+          if (topCard.value == values[count-1]) {
+            gameOver = true;
+          } else {
+            score++;
+            if (deck.cards.length == 0) {
+              finnished = true; // HOLY FUCK
+            }
+          }
+          if (count > 13) count = 1;
+          redraw();
+        }
+      } else  {
+        let flippedStackX = 3*width/4 - cardWidth/2;
+        let flippedStackY = height/2 - cardHeight/2;
+        if (mouseX > flippedStackX && mouseX < flippedStackX+cardWidth && mouseY > flippedStackY && mouseY < flippedStackY+cardHeight) {
+          resetDeck();
+          redraw();
+        }
+      }
+    }
+    
+    function windowResized() {
+      resizeCanvasToDiv();
+      redraw();
+    }
+    
+    function resizeCanvasToDiv() {
+      let container = document.getElementById('sketch-container');
+      let canvas = createCanvas(container.clientWidth, container.clientWidth/aspect);
+      canvas.parent(container);
+      cardWidth = width / 4;
+      cardHeight = cardWidth / cardAspect;
+    }
+  </script>
+</head>
+<body>
+  <header>
+    <h1>Pöliän sian pasianssi</h1>
+  </header>
+  <main>
+    <article>
+      <div id="sketch-container"></div>
+    </article>
+  </main>
+  <footer>
+    <p>&copy; 2025 <a href="/">Hot new planet</a></p>
+  </footer>
+</body>
+</html>
