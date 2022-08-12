@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Hot new planet</title>
+    <link>https://hotnewplanet.com/</link>
+    <description>Recent content on Hot new planet</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>fi-FI</language><atom:link href="https://hotnewplanet.com/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>About</title>
+      <link>https://hotnewplanet.com/about/</link>
+      <pubDate>Wed, 10 Aug 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://hotnewplanet.com/about/</guid>
+      <description>So hot</description>
+    </item>
+    
+  </channel>
+</rss>
